@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:hi_tag_c66/views/hi_tab/hi_tab_screen.dart';
+import 'package:hi_tag_c66/views/store/store_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../services/rfid_service.dart';
-import '../../views/placeholder_screen.dart';
 import '../../views/hi_counter/hi_counter_screen.dart';
 import '../../views/profile/profile_screen.dart';
 import '../../views/settings/settings_screen.dart';
+import '../../viewmodels/hi_tab_viewmodel.dart';
+import '../../viewmodels/hi_counter_viewmodel.dart';
+import '../../services/beep_manager.dart';
 
 class DashboardScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -63,7 +67,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const HiCounterScreen(),
+                            builder: (_) =>
+                                const HiCounterScreen(), // 👈 ساده و راحت، چون خودش تو فایل خودش Provider داره
                           ),
                         ),
                       ),
@@ -74,9 +79,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                                const PlaceholderScreen(title: 'تنظیمات'),
-                            settings: const RouteSettings(name: 'MyStoreRoute'),
+                            builder: (_) => const StoreScreen(),
                           ),
                         ),
                       ),
@@ -84,13 +87,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         context: context,
                         title: "HI-TAB",
                         imagePath: "assets/images/hi_tab.png",
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const PlaceholderScreen(title: 'تنظیمات'),
-                          ),
-                        ),
+                        onTap: () {
+                          final rfidService = context.read<RfidService>();
+                          final beepManager = context
+                              .read<BeepManager>(); // 👈 اضافه شد
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ChangeNotifierProvider<HiTabViewModel>(
+                                    create: (context) => HiTabViewModel(
+                                      rfidService: rfidService,
+                                      beepManager:
+                                          beepManager, // 👈 بهش پاس میدیم
+                                    ),
+                                    child: const HiTabScreen(),
+                                  ),
+                            ),
+                          );
+                        },
                       ),
                       _buildMenuCard(
                         context: context,

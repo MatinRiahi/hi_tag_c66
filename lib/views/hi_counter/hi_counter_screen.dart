@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/rfid_service.dart';
 import '../../viewmodels/hi_counter_viewmodel.dart';
+import '../../services/beep_manager.dart';
 
 class HiCounterScreen extends StatelessWidget {
   const HiCounterScreen({super.key});
@@ -10,8 +11,11 @@ class HiCounterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) =>
-          HiCounterViewModel(rfidService: context.read<RfidService>()),
+      create: (context) => HiCounterViewModel(
+        // 👈 اینجا به جای _ گذاشتم context
+        rfidService: context.read<RfidService>(),
+        beepManager: context.read<BeepManager>(), // 👈 این خط اضافه شد!
+      ),
       child: const _HiCounterView(),
     );
   }

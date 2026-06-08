@@ -10,9 +10,7 @@ import 'services/beep_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  BeepManager().startMonitoring();
 
-  // 👇 عمودی - برعکس پروژه قبلی
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -22,9 +20,14 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        // RfidService رو یه بار اینجا میسازیم
-        // تا همه صفحات بهش دسترسی داشته باشن
         Provider<RfidService>(create: (_) => RfidService()),
+        Provider<BeepManager>(
+          create: (_) {
+            final manager = BeepManager();
+            manager.startMonitoring(); // تایمر فقط همینجا یه بار روشن میشه
+            return manager;
+          },
+        ),
       ],
       child: const MyApp(),
     ),

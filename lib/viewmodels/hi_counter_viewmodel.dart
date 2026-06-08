@@ -8,10 +8,9 @@ import '../../services/beep_manager.dart'; // اضافه شد
 
 class HiCounterViewModel extends ChangeNotifier {
   final RfidService rfidService;
-  final BeepManager beepManager = BeepManager(); // دسترسی به منیجر گلوبال
+  final BeepManager beepManager; // دسترسی به منیجر گلوبال
 
-  HiCounterViewModel({required this.rfidService}) {
-    // برای اینکه آپدیت‌های ثانیه‌ای منیجر به UI ما هم برسه
+  HiCounterViewModel({required this.rfidService, required this.beepManager}) {
     beepManager.addListener(_onBeepManagerUpdate);
   }
 
