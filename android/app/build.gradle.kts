@@ -44,5 +44,6 @@ flutter {
 }
 
 dependencies {
+    implementation(files("libs/DeviceAPI_ver20251103_release.aar"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 }

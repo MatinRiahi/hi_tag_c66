@@ -34,6 +34,7 @@ class HiCounterViewModel extends ChangeNotifier {
 
   // ── شروع اسکن ──────────────────────────
   Future<void> startScanning() async {
+    await rfidService.setTagFocus(true);
     await rfidService.startScan();
 
     _tagSubscription = rfidService.tagStream.listen((tag) {
@@ -45,6 +46,7 @@ class HiCounterViewModel extends ChangeNotifier {
   // ── توقف اسکن ───────────────────────
   Future<void> stopScanning() async {
     await rfidService.stopScan();
+    await rfidService.setTagFocus(false);
     _tagSubscription?.cancel();
     _tagSubscription = null;
   }
@@ -137,7 +139,18 @@ class HiCounterViewModel extends ChangeNotifier {
 
   void addToTrust() {
     if (currentProduct == null) return;
+
+    // گرفتن epc کالایی که داره ثبت میشه
+    final epc = currentProduct!['epc'].toString().trim().toUpperCase();
+
     beepManager.addItem(currentProduct!); // افزودن با منیجر
+
+    // 🔥 اضافه کردن به لیست پردازش شده‌ها برای جلوگیری از حذف ناخواسته (۳ ثانیه مهلت)
+    _recentlyProcessed.add(epc);
+    Timer(const Duration(seconds: 3), () {
+      _recentlyProcessed.remove(epc);
+    });
+
     currentProduct = null;
     notifyListeners();
   }

@@ -56,6 +56,14 @@ class MainActivity : FlutterActivity() {
                     result.success(success)
                 }
 
+                // 🔥 این بخش جدید برای TagFocus اضافه شد
+                "setTagFocus" -> {
+                    val enable = call.argument<Boolean>("enable") ?: false
+                    // فراخوانی متد SDK
+                    val success = rfid?.setTagFocus(enable) ?: false
+                    result.success(success)
+                }
+
                 else -> result.notImplemented()
             }
         }
@@ -93,9 +101,6 @@ class MainActivity : FlutterActivity() {
                     val epc = tag.epc ?: ""
                     val rssi = tag.rssi ?: ""
 
-                    // بیپ بزن
-                    playBeep()
-
                     // بفرست به فلاتر (باید روی main thread باشه)
                     mainHandler.post {
                         eventSink?.success(
@@ -128,16 +133,6 @@ class MainActivity : FlutterActivity() {
             rfid?.free() ?: false
         } catch (e: Exception) {
             false
-        }
-    }
-
-    // ── صدای بیپ ─────────────────────────────────────────────────
-    private fun playBeep() {
-        try {
-            val toneGen = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-            toneGen.startTone(ToneGenerator.TONE_CDMA_PIP, 150)
-        } catch (e: Exception) {
-            // اگه صدا کار نکرد اپ کرش نکنه
         }
     }
 

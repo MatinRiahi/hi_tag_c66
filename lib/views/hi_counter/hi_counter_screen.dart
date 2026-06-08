@@ -63,42 +63,55 @@ class _HiCounterViewState extends State<_HiCounterView> {
         vm.clearError();
       });
     }
+    return PopScope(
+      canPop: false, // جلوگیری از خروج خودکار
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: _buildAppBar(context, vm),
-        // 👇 اینجا فرق اصلیه - Column به جای Row
-        body: Column(
-          children: [
-            // --- بخش اطلاعات محصول (بالا) ---
-            Expanded(
-              flex: 5,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: vm.isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          color: AppTheme.primaryGold,
-                        ),
-                      )
-                    : vm.currentProduct == null
-                    ? _buildWaitingState(context)
-                    : _buildProductDetails(context, vm),
+        // اول اسکن رو متوقف می‌کنیم و منتظر می‌مونیم تموم شه
+        await context.read<HiCounterViewModel>().stopScanning();
+
+        // بعد از اینکه مطمئن شدیم خاموش شد، از صفحه خارج میشیم
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: _buildAppBar(context, vm),
+          // 👇 اینجا فرق اصلیه - Column به جای Row
+          body: Column(
+            children: [
+              // --- بخش اطلاعات محصول (بالا) ---
+              Expanded(
+                flex: 5,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: vm.isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.primaryGold,
+                          ),
+                        )
+                      : vm.currentProduct == null
+                      ? _buildWaitingState(context)
+                      : _buildProductDetails(context, vm),
+                ),
               ),
-            ),
 
-            // --- خط جداکننده ---
-            Divider(
-              color: AppTheme.primaryGold.withOpacity(0.3),
-              thickness: 1,
-              indent: 16,
-              endIndent: 16,
-            ),
+              // --- خط جداکننده ---
+              Divider(
+                color: AppTheme.primaryGold.withOpacity(0.3),
+                thickness: 1,
+                indent: 16,
+                endIndent: 16,
+              ),
 
-            // --- لیست امانی (پایین) ---
-            Expanded(flex: 5, child: _buildTrustList(context, vm)),
-          ],
+              // --- لیست امانی (پایین) ---
+              Expanded(flex: 5, child: _buildTrustList(context, vm)),
+            ],
+          ),
         ),
       ),
     );
@@ -118,7 +131,12 @@ class _HiCounterViewState extends State<_HiCounterView> {
           Icons.arrow_back_ios,
           color: Theme.of(context).colorScheme.onSurface,
         ),
-        onPressed: () => Navigator.maybePop(context),
+        onPressed: () async {
+          await vm.stopScanning();
+          if (context.mounted) {
+            Navigator.maybePop(context);
+          }
+        },
       ),
       actions: [
         IconButton(

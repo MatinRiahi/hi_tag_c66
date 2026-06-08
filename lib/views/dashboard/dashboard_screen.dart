@@ -5,6 +5,8 @@ import '../../core/theme/theme_provider.dart';
 import '../../services/rfid_service.dart';
 import '../../views/placeholder_screen.dart';
 import '../../views/hi_counter/hi_counter_screen.dart';
+import '../../views/profile/profile_screen.dart';
+import '../../views/settings/settings_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -94,13 +96,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         context: context,
                         title: "پروفایل",
                         imagePath: "assets/images/profile.png",
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const PlaceholderScreen(title: 'تنظیمات'),
-                          ),
-                        ),
+                        onTap: () {
+                          // 🔥 اینجا دیتای یوزر رو پاس میدیم به صفحه پروفایل
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ProfileScreen(data: widget.userData),
+                            ),
+                          );
+                        },
                       ),
                       _buildMenuCard(
                         context: context,
@@ -109,8 +114,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                                const PlaceholderScreen(title: 'تنظیمات'),
+                            builder: (_) => const SettingsScreen(),
                           ),
                         ),
                       ),

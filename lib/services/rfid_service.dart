@@ -17,6 +17,21 @@ class RfidService {
     }
   }
 
+  // روشن یا خاموش کردن TagFocus
+  Future<bool> setTagFocus(bool enable) async {
+    try {
+      // 🔥 کلمه platform به _methodChannel تغییر کرد
+      final result = await _methodChannel.invokeMethod<bool>('setTagFocus', {
+        'enable': enable,
+      });
+      print("TagFocus set to $enable: Success=$result");
+      return result ?? false;
+    } on PlatformException catch (e) {
+      print("Failed to set TagFocus: '${e.message}'.");
+      return false;
+    }
+  }
+
   // ── شروع اسکن ────────────────────────────────────────────────
   Future<bool> startScan() async {
     try {

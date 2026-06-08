@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../viewmodels/login_viewmodel.dart';
+import '../../views/dashboard/dashboard_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -24,10 +25,13 @@ class _LoginView extends StatelessWidget {
 
     if (vm.userData != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(
+        Navigator.pushReplacement(
           context,
-          '/dashboard',
-          arguments: vm.userData,
+          MaterialPageRoute(
+            builder: (_) => DashboardScreen(
+              userData: vm.userData!,
+            ), // 🔥 دیتا مستقیم پاس داده میشه
+          ),
         );
       });
     }
