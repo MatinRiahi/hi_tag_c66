@@ -9,7 +9,6 @@ import '../../views/hi_counter/hi_counter_screen.dart';
 import '../../views/profile/profile_screen.dart';
 import '../../views/settings/settings_screen.dart';
 import '../../viewmodels/hi_tab_viewmodel.dart';
-import '../../viewmodels/hi_counter_viewmodel.dart';
 import '../../services/beep_manager.dart';
 
 class DashboardScreen extends StatefulWidget {
