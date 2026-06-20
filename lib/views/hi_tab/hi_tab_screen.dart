@@ -506,12 +506,16 @@ class _HiTabScreenState extends State<HiTabScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
+      // 👇 کلمه async باید دقیقا اینجا باشه
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
         if (didPop) return;
-        Navigator.pop(
-          context,
-          viewModel.invoiceList,
-        ); // 👈 برگرداندن لیست از ویومدل
+
+        // حالا دیگه به await گیر نمیده
+        await viewModel.stopScanning();
+
+        if (context.mounted) {
+          Navigator.pop(context, viewModel.invoiceList);
+        }
       },
       child: SafeArea(
         child: Scaffold(
@@ -535,7 +539,14 @@ class _HiTabScreenState extends State<HiTabScreen> {
                 Icons.arrow_back_ios,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
-              onPressed: () => Navigator.pop(context, viewModel.invoiceList),
+              onPressed: () async {
+                // حالا دیگه به await گیر نمیده
+                await viewModel.stopScanning();
+
+                if (context.mounted) {
+                  Navigator.pop(context, viewModel.invoiceList);
+                }
+              },
             ),
             actions: [
               if (viewModel.invoiceList.isNotEmpty)

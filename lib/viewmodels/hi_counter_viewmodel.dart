@@ -117,7 +117,7 @@ class HiCounterViewModel extends ChangeNotifier {
             'stone_price': (info['stone_price'] ?? 0).toDouble() / 10,
             'ojrat': (info['ojrat'] ?? 0).toDouble(),
             'image': info['image'] != null
-                ? '${AppConstants.baseUrl}/${info['image']}'
+                ? '${AppConstants.baseUrl}${info['image']}'
                 : '',
             'is_available': info['is_mojod'] == true || info['is_mojod'] == 1,
             // start_time رو موقع افزودن به تراست لیست می‌زنیم

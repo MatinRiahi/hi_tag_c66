@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static const Color primaryGold = Color(0xFFD4AF37);
-  static const Color gradientGoldLight = Color(
-    0xFFCFBD82,
-  ); // طلایی روشن برای گرادینت
-  static const Color gradientGoldDark = Color(
-    0xFFB17540,
-  ); // طلایی تیره برای گرادینت
+  static const Color gradientGoldLight = Color(0xFFCFBD82); // طلایی روشن
+  static const Color gradientGoldDark = Color(0xFFB17540); // طلایی تیره
+
+  // 🔥 رنگ‌های جدید سرمه‌ای برای تم تاریک
+  static const Color navyBackgroundLight = Color(0xFF1C3761);
+  static const Color navyBackgroundDark = Color(0xFF091A35);
+  static const Color navyCardSurface = Color(
+    0xFF284B82,
+  ); // سرمه‌ای روشن‌تر برای کارت وسط
+
   static const String fontName = 'Peyda';
 
   // --- تم تاریک ---
@@ -15,12 +19,14 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: const Color(0xFF121212),
+      // رنگ بک‌گراند پایه رو رو تیره‌ترین سرمه‌ای میذاریم
+      scaffoldBackgroundColor: navyBackgroundDark,
       fontFamily: fontName,
       colorScheme: const ColorScheme.dark(
         primary: primaryGold,
         secondary: primaryGold,
-        surface: Color(0xFF1E1E1E),
+        // رنگ المان‌های روی صفحه (مثل کارت وسط) رو این رنگ میذاریم
+        surface: navyCardSurface,
         onSurface: Colors.white,
       ),
 
@@ -38,9 +44,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryGold, // رنگ پس‌زمینه دکمه‌ها طلایی
-          foregroundColor:
-              Colors.black, // رنگ متن روی دکمه‌ها مشکی (برای خوانایی روی طلایی)
+          backgroundColor: primaryGold,
+          foregroundColor: Colors.black,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -53,9 +58,7 @@ class AppTheme {
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: primaryGold, // رنگ متن دکمه‌های متنی
-        ),
+        style: TextButton.styleFrom(foregroundColor: primaryGold),
       ),
     );
   }

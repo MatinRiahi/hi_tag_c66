@@ -4,6 +4,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 
+// 🔥 ایمپورت‌های مربوط به پروایدر و تم اضافه شد
+import 'package:provider/provider.dart';
+import '../../core/theme/theme_provider.dart';
+
 // 👇 مسیر این دو تا رو چک کن که درست باشه
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
@@ -214,6 +218,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    // 🔥 فراخوانی themeProvider
+    final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
       body: SafeArea(
@@ -233,12 +239,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Center(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ), // 👈 پدینگ کمتر برای 5.5 اینچ
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
-                  width: size.width * 0.95, // 👈 استفاده از عرض موبایل
-                  padding: const EdgeInsets.all(16), // 👈 جمع و جورتر شد
+                  width: size.width * 0.95,
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Theme.of(
                       context,
@@ -266,10 +270,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         children: [
                           const SizedBox(width: 32),
                           Text(
-                            "تنظیمات نرخ‌ها",
+                            "تنظیمات", // 👈 عنوان کلی‌تر شد
                             style: TextStyle(
                               fontFamily: 'Peyda',
-                              fontSize: 18, // 👈 متناسب با موبایل
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -301,7 +305,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       // --- خطوط جداکننده طلایی ---
                       Container(
                         height: 2,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
                               Colors.transparent,
@@ -371,12 +375,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           },
                         ),
 
+                        const SizedBox(height: 8),
+
+                        // 🔥 این همونیه که اضافه شد: تنظیمات تم
+                        _buildThemeSwitch(context, themeProvider),
+
                         const SizedBox(height: 20),
 
                         // --- دکمه ذخیره ---
                         Container(
                           width: double.infinity,
-                          height: 45, // 👈 ارتفاع مناسب دکمه لمسی
+                          height: 45,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [
@@ -427,12 +436,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSwitchInput(String label, bool value, Function(bool) onChanged) {
+  // 🔥 ویجت ساخته شده مخصوص سوییچ تم که هم‌شکل با بقیه آیتم‌هاست
+  Widget _buildThemeSwitch(BuildContext context, ThemeProvider themeProvider) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 6,
-      ), // 👈 جمع و جورتر
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface.withOpacity(0.3),
         borderRadius: BorderRadius.circular(10),
@@ -442,7 +449,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        textDirection: TextDirection.rtl, // 👈 برای راست‌چین بودن منظم
+        textDirection: TextDirection.rtl,
+        children: [
+          Row(
+            textDirection: TextDirection.rtl,
+            children: [
+              Icon(
+                themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                size: 18,
+                color: themeProvider.isDarkMode
+                    ? Colors.white70
+                    : Colors.black87,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                "حالت تاریک اپلیکیشن",
+                style: TextStyle(
+                  fontFamily: 'Peyda',
+                  fontSize: 13,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.8),
+                ),
+              ),
+            ],
+          ),
+          Transform.scale(
+            scale: 0.75,
+            child: CupertinoSwitch(
+              value: themeProvider.isDarkMode,
+              onChanged: (value) => themeProvider.toggleTheme(value),
+              activeColor: AppTheme.primaryGold,
+              trackColor: Theme.of(
+                context,
+              ).colorScheme.onSurface.withOpacity(0.24),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSwitchInput(String label, bool value, Function(bool) onChanged) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        textDirection: TextDirection.rtl,
         children: [
           Expanded(
             child: Text(
@@ -455,7 +515,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           Transform.scale(
-            scale: 0.75, // 👈 کمی کوچکتر برای موبایل
+            scale: 0.75,
             child: CupertinoSwitch(
               value: value,
               onChanged: onChanged,
@@ -472,10 +532,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildInlineInput(String label, TextEditingController controller) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 2,
-      ), // 👈 جمع و جورتر
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface.withOpacity(0.3),
         borderRadius: BorderRadius.circular(10),
@@ -485,7 +542,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        textDirection: TextDirection.rtl, // 👈 راست‌چین
+        textDirection: TextDirection.rtl,
         children: [
           Text(
             label,
@@ -496,12 +553,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           SizedBox(
-            width: 70, // 👈 بهینه‌تر برای 5.5 اینچ
+            width: 70,
             child: TextField(
               controller: controller,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
-              ), // 👈 امکان وارد کردن اعشار
+              ),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontFamily: 'Peyda',
@@ -518,7 +575,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 suffixText: "%",
                 suffixStyle: TextStyle(
-                  fontFamily: 'Peyda', // 👈 فونت یکپارچه
+                  fontFamily: 'Peyda',
                   color: Theme.of(
                     context,
                   ).colorScheme.onSurface.withOpacity(0.38),

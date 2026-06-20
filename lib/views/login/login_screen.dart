@@ -23,14 +23,15 @@ class _LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<LoginViewModel>();
 
+    // 🔥 بررسی وضعیت تم (دارک یا لایت)
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     if (vm.userData != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => DashboardScreen(
-              userData: vm.userData!,
-            ), // 🔥 دیتا مستقیم پاس داده میشه
+            builder: (_) => DashboardScreen(userData: vm.userData!),
           ),
         );
       });
@@ -40,12 +41,15 @@ class _LoginView extends StatelessWidget {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Container(
+          // 🔥 تنظیم گرادیانت پس‌زمینه
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Theme.of(context).scaffoldBackgroundColor,
-                Theme.of(context).colorScheme.surface,
-              ],
+              colors: isDarkMode
+                  ? [AppTheme.navyBackgroundLight, AppTheme.navyBackgroundDark]
+                  : [
+                      Theme.of(context).scaffoldBackgroundColor,
+                      Theme.of(context).colorScheme.surface,
+                    ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -53,28 +57,33 @@ class _LoginView extends StatelessWidget {
           child: Center(
             child: SingleChildScrollView(
               child: Padding(
-                // 👇 padding برای 5.5 اینچ عمودی
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Container(
-                  // 👇 اینجا فرق اصلیه - قبلاً 0.37 بود برای لندسکیپ
-                  // الان برای پرتریت 5.5 اینچ تمام عرض رو میگیریم
                   width: double.infinity,
                   padding: const EdgeInsets.all(28),
+                  // 🔥 استایل دادن به کارت وسط
                   decoration: BoxDecoration(
+                    // اگر دارک بود از surface سرمه‌ای روشن‌تر با شفافیت استفاده می‌کنه
                     color: Theme.of(
                       context,
-                    ).colorScheme.surface.withOpacity(0.8),
+                    ).colorScheme.surface.withOpacity(isDarkMode ? 0.65 : 0.8),
                     borderRadius: BorderRadius.circular(25),
                     border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.1),
+                      // یه بردر خیلی محو سفید برای حالت دارک میذاریم که کارت رو شیک‌تر کنه
+                      color: isDarkMode
+                          ? Colors.white.withOpacity(0.15)
+                          : Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.1),
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.withOpacity(
+                          isDarkMode ? 0.5 : 0.2,
+                        ), // سایه تو دارک کمی قوی‌تره
                         blurRadius: 20,
-                        spreadRadius: 5,
+                        spreadRadius:
+                            3, // اسپرد رو یکم کمتر کردم که کارت برجسته‌تر دیده بشه
                       ),
                     ],
                   ),
@@ -83,16 +92,13 @@ class _LoginView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // لوگو
-                      Image.asset(
-                        'assets/images/logo.png',
-                        height: 80, // 👈 کمی کوچکتر برای 5.5 اینچ
-                      ),
+                      Image.asset('assets/images/logo.png', height: 80),
                       const SizedBox(height: 16),
 
                       Text(
                         'لطفا وارد حساب کاربری خود شوید',
                         style: TextStyle(
-                          fontSize: 14, // 👈 کمی کوچکتر
+                          fontSize: 14,
                           color: Theme.of(
                             context,
                           ).colorScheme.onSurface.withOpacity(0.7),
@@ -159,6 +165,14 @@ class _LoginView extends StatelessWidget {
                             end: Alignment.centerRight,
                           ),
                           borderRadius: BorderRadius.circular(15),
+                          // یه سایه کم جون طلایی به دکمه اضافه کردم قشنگ‌تر شه
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryGold.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: ElevatedButton(
                           onPressed: vm.isLoading ? null : vm.login,
@@ -208,6 +222,9 @@ class _LoginView extends StatelessWidget {
     bool isPasswordVisible = false,
     VoidCallback? onTogglePassword,
   }) {
+    // گرفتن وضعیت تم برای فیلدها هم مفیده
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return TextField(
       controller: controller,
       obscureText: isPassword && !isPasswordVisible,
@@ -232,7 +249,10 @@ class _LoginView extends StatelessWidget {
           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
         ),
         filled: true,
-        fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+        // تو تم دارک بک‌گراند فیلدها یکم تیره‌تر بشه تا با کارت روشن‌تر کنتراست بسازه
+        fillColor: Theme.of(
+          context,
+        ).colorScheme.surface.withOpacity(isDarkMode ? 0.3 : 0.5),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,

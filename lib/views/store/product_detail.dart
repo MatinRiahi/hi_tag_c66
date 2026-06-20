@@ -649,7 +649,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      isInCart ? "موجود" : "افزودن",
+                      isInCart ? "موجود" : "افزودن به سبد",
                       style: const TextStyle(
                         fontFamily: 'Peyda',
                         fontSize: 11,
